@@ -1,18 +1,22 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { addContacts } from 'redux/contactsSlice';
 import {
   FormContact,
   FormLabel,
   FormInput,
   FormButton,
 } from './ContactForm.styled';
-import Notiflix from 'notiflix';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import {
+  useAddContactsMutation,
+  useFetchContactsQuery,
+} from 'redux/api/contactsApi';
 
 export const ContactForm = () => {
-  const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts.array);
+  const { data: contacts = [] } = useFetchContactsQuery();
+  const [addContacts, { isLoading }] = useAddContactsMutation();
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const { name, number } = e.target;
 
@@ -21,13 +25,14 @@ export const ContactForm = () => {
     );
 
     if (isDuplicateContact) {
-      Notiflix.Notify.warning('Contact with this name already exists!');
+      toast.warn('Contact with this name already exists!');
       return;
     }
 
-    dispatch(addContacts(name.value, number.value));
-    name.value = '';
-    number.value = '';
+    addContacts({
+      name: name.value,
+      number: number.value,
+    });
   };
 
   return (
@@ -52,7 +57,9 @@ export const ContactForm = () => {
           required
         />
       </FormLabel>
-      <FormButton type="submit">Add contact</FormButton>
+      <FormButton type="submit" disabled={isLoading}>
+        {isLoading ? 'Adding...' : 'Add contact'}
+      </FormButton>
     </FormContact>
   );
 };

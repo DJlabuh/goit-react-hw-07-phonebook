@@ -1,20 +1,9 @@
-import storage from 'redux-persist/lib/storage';
-import { persistReducer } from 'redux-persist';
-
 import { contactsReducer } from './contactsSlice';
 import { filterReducer } from './filterSlice';
-
-const persistConfigContacts = {
-  key: 'contacts',
-  storage,
-};
-
-const persistedReducerContacts = persistReducer(
-  persistConfigContacts,
-  contactsReducer
-);
+import { contactsApi } from './api/contactsApi';
 
 export const reducer = {
-  contacts: persistedReducerContacts,
+  contacts: contactsReducer,
+  [contactsApi.reducerPath]: contactsApi.reducer,
   filter: filterReducer,
 };

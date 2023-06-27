@@ -1,6 +1,6 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, getFilter } from 'redux/selectors';
-import { deleteContacts } from 'redux/contactsSlice';
+import { useSelector } from 'react-redux';
+import { selectContacts, selectFilter } from 'redux/selectors';
+import { useDeleteContactsMutation } from 'redux/api/contactsApi';
 import {
   ContactsUl,
   ContactsLi,
@@ -11,15 +11,14 @@ import {
 import { getVisibleContacts } from 'helpers/contactUtils';
 
 export const ContactList = () => {
-  const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter);
+  const contacts = useSelector(selectContacts);
+  const filter = useSelector(selectFilter);
 
   const visibleContacts = getVisibleContacts(contacts, filter);
 
-  const handleDeleteContact = id => {
-    dispatch(deleteContacts(id));
-  };
+  console.log(visibleContacts);
+
+  const [deleteContact] = useDeleteContactsMutation();
 
   return (
     <ContactsUl>
@@ -27,7 +26,7 @@ export const ContactList = () => {
         <ContactsLi key={id}>
           <ContactsText>{name}</ContactsText>
           <ContactsText>{number}</ContactsText>
-          <ContactsButton onClick={() => handleDeleteContact(id)}>
+          <ContactsButton onClick={() => deleteContact(id)}>
             Delete
           </ContactsButton>
         </ContactsLi>
