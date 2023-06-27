@@ -3,6 +3,9 @@ import { useFetchContactsQuery } from 'redux/api/contactsApi';
 import { useSelector } from 'react-redux';
 import { selectFilter } from 'redux/selectors';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { Container, SectionComponents, Title, WarningText } from './App.styled';
 
 import { ContactForm } from 'components/ContactForm';
@@ -22,6 +25,7 @@ export const App = () => {
 
   return (
     <Container>
+      <ToastContainer />
       <SectionComponents>
         <Title>Phonebook</Title>
         <ContactForm />
