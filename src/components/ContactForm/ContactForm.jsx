@@ -1,11 +1,13 @@
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import {
   FormContact,
   FormLabel,
   FormInput,
   FormButton,
 } from './ContactForm.styled';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import {
   useAddContactsMutation,
@@ -15,24 +17,35 @@ import {
 export const ContactForm = () => {
   const { data: contacts = [] } = useFetchContactsQuery();
   const [addContacts, { isLoading }] = useAddContactsMutation();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const { name, number } = e.target;
 
-    const isDuplicateContact = contacts.some(
-      contact => contact.name.toLowerCase() === name.value.toLowerCase()
+    const isDuplicateName = contacts.some(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
     );
 
-    if (isDuplicateContact) {
-      toast.warn('Contact with this name already exists!');
+    const isDuplicateNumber = contacts.some(contact => contact.phone === phone);
+
+    if (isDuplicateName) {
+      toast.error(`Contact with this ${name} already exists!`);
+      return;
+    }
+
+    if (isDuplicateNumber) {
+      toast.error(`Contact with this ${phone} already exists!`);
       return;
     }
 
     addContacts({
-      name: name.value,
-      number: number.value,
+      name,
+      phone,
     });
+
+    setName('');
+    setPhone('');
   };
 
   return (
@@ -42,6 +55,8 @@ export const ContactForm = () => {
         <FormInput
           type="text"
           name="name"
+          value={name}
+          onChange={e => setName(e.target.value)}
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
@@ -51,7 +66,9 @@ export const ContactForm = () => {
         Number
         <FormInput
           type="tel"
-          name="number"
+          name="phone"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required

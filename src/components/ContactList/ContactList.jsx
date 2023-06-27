@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { selectContacts, selectFilter } from 'redux/selectors';
+import { selectFilter } from 'redux/selectors';
 import { useDeleteContactsMutation } from 'redux/api/contactsApi';
 import {
   ContactsUl,
@@ -10,22 +10,23 @@ import {
 
 import { getVisibleContacts } from 'helpers/contactUtils';
 
+import { useFetchContactsQuery } from 'redux/api/contactsApi';
+
 export const ContactList = () => {
-  const contacts = useSelector(selectContacts);
+  const { data: contacts = [] } = useFetchContactsQuery();
+
   const filter = useSelector(selectFilter);
 
   const visibleContacts = getVisibleContacts(contacts, filter);
-
-  console.log(visibleContacts);
 
   const [deleteContact] = useDeleteContactsMutation();
 
   return (
     <ContactsUl>
-      {visibleContacts.map(({ name, number, id }) => (
+      {visibleContacts.map(({ name, phone, id }) => (
         <ContactsLi key={id}>
           <ContactsText>{name}</ContactsText>
-          <ContactsText>{number}</ContactsText>
+          <ContactsText>{phone}</ContactsText>
           <ContactsButton onClick={() => deleteContact(id)}>
             Delete
           </ContactsButton>
