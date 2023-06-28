@@ -1,49 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchContacts, addContacts, deleteContacts } from 'redux/operations';
 
-axios.defaults.baseURL = 'https://6497349a83d4c69925a37ed4.mockapi.io';
-
-export const fetchContacts = createAsyncThunk(
-  'contacts/fetchAll',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get('/contacts');
-      return response.data;
-    } catch (e) {
-      return rejectWithValue(e.message);
-    }
-  }
-);
-
-export const addContacts = createAsyncThunk(
-  'contacts/addContacts',
-  async (contact, { rejectWithValue }) => {
-    try {
-      const response = await axios.post('/contacts', contact);
-      toast.success('New contact added');
-      return response.data;
-    } catch (e) {
-      return rejectWithValue(e.message);
-    }
-  }
-);
-
-export const deleteContacts = createAsyncThunk(
-  'contacts/deleteContacts',
-  async (contactId, { rejectWithValue }) => {
-    try {
-      const response = await axios.delete(`/contacts/${contactId}`);
-      toast.success('Contact deleted successfully');
-      return response.data;
-    } catch (e) {
-      return rejectWithValue(e.message);
-    }
-  }
-);
-
-const handlePending = state => {
+const handlePending = (state) => {
   state.isLoading = true;
 };
 
@@ -62,7 +20,7 @@ const handleFulfilledAddProduct = (state, { payload }) => {
 const handleFulfilledDeleteProduct = (state, { payload }) => {
   state.isLoading = false;
   state.error = null;
-  const index = state.array.findIndex(contact => contact.id === payload.id);
+  const index = state.array.findIndex((contact) => contact.id === payload.id);
   state.array.splice(index, 1);
 };
 
@@ -81,7 +39,7 @@ export const contactsSlice = createSlice({
   name: 'contacts',
   initialState: contactsInitialState,
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
       .addCase(fetchContacts.pending, handlePending)
       .addCase(fetchContacts.fulfilled, handleFulfilled)

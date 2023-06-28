@@ -18,14 +18,13 @@ import { getVisibleContacts } from 'helpers/contactUtils';
 
 export const App = () => {
   const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
+  const filter = useSelector(selectFilter);
+  const isLoading = useSelector(selectIsLoading);
 
   useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
-
-  const contacts = useSelector(selectContacts);
-  const filter = useSelector(selectFilter);
-  const isLoading = useSelector(selectIsLoading);
 
   const visibleContacts = getVisibleContacts(contacts, filter);
 
