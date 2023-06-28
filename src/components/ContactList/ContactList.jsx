@@ -1,6 +1,6 @@
-import { useSelector } from 'react-redux';
-import { selectFilter } from 'redux/selectors';
-import { useDeleteContactsMutation } from 'redux/api/contactsApi';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectFilter, selectContacts, selectIsLoading } from 'redux/selectors';
+import { deleteContacts } from 'redux/operations';
 import {
   ContactsUl,
   ContactsLi,
@@ -10,16 +10,17 @@ import {
 
 import { getVisibleContacts } from 'helpers/contactUtils';
 
-import { useFetchContactsQuery } from 'redux/api/contactsApi';
-
 export const ContactList = () => {
-  const { data: contacts = [] } = useFetchContactsQuery();
-
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
   const filter = useSelector(selectFilter);
+  const isLoading = useSelector(selectIsLoading);
 
   const visibleContacts = getVisibleContacts(contacts, filter);
 
-  const [deleteContact] = useDeleteContactsMutation();
+  const handleDeleteContact = contactId => {
+    dispatch(deleteContacts(contactId));
+  };
 
   return (
     <ContactsUl>
@@ -27,8 +28,11 @@ export const ContactList = () => {
         <ContactsLi key={id}>
           <ContactsText>{name}</ContactsText>
           <ContactsText>{phone}</ContactsText>
-          <ContactsButton onClick={() => deleteContact(id)}>
-            Delete
+          <ContactsButton
+            onClick={() => handleDeleteContact(id)}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Deleting...' : 'Delete'}
           </ContactsButton>
         </ContactsLi>
       ))}

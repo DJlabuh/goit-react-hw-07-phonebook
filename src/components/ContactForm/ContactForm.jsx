@@ -9,18 +9,17 @@ import {
   FormButton,
 } from './ContactForm.styled';
 
-import {
-  useAddContactsMutation,
-  useFetchContactsQuery,
-} from 'redux/api/contactsApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContacts } from 'redux/operations';
+import { selectContacts } from 'redux/selectors';
 
 export const ContactForm = () => {
-  const { data: contacts = [] } = useFetchContactsQuery();
-  const [addContacts, { isLoading }] = useAddContactsMutation();
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
 
-  const handleSubmit = async e => {
+  const handleSubmit = e => {
     e.preventDefault();
 
     const isDuplicateName = contacts.some(
@@ -39,10 +38,7 @@ export const ContactForm = () => {
       return;
     }
 
-    addContacts({
-      name,
-      phone,
-    });
+    dispatch(addContacts({ name, phone }));
 
     setName('');
     setPhone('');
@@ -63,7 +59,7 @@ export const ContactForm = () => {
         />
       </FormLabel>
       <FormLabel>
-        Number
+        Phone
         <FormInput
           type="tel"
           name="phone"
@@ -74,9 +70,7 @@ export const ContactForm = () => {
           required
         />
       </FormLabel>
-      <FormButton type="submit" disabled={isLoading}>
-        {isLoading ? 'Adding...' : 'Add contact'}
-      </FormButton>
+      <FormButton type="submit">Add contact</FormButton>
     </FormContact>
   );
 };

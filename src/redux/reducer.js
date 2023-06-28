@@ -1,9 +1,10 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { contactsReducer } from './contactsSlice';
 import { filterReducer } from './filterSlice';
-import { contactsApi } from './api/contactsApi';
 
-export const reducer = {
-  contacts: contactsReducer,
-  [contactsApi.reducerPath]: contactsApi.reducer,
-  filter: filterReducer,
-};
+export const store = configureStore({
+  reducer: {
+    contacts: contactsReducer,
+    filter: filterReducer,
+  },
+});

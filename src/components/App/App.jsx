@@ -1,7 +1,5 @@
-import { useFetchContactsQuery } from 'redux/api/contactsApi';
-
 import { useSelector } from 'react-redux';
-import { selectFilter } from 'redux/selectors';
+import { selectFilter, selectContacts, selectIsLoading } from 'redux/selectors';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,16 +14,14 @@ import { Loader } from 'components/Loader/Loader';
 import { getVisibleContacts } from 'helpers/contactUtils';
 
 export const App = () => {
-  const { data: contacts = [], isFetching: isLoading } =
-    useFetchContactsQuery();
-
+  const contacts = useSelector(selectContacts);
   const filter = useSelector(selectFilter);
+  const isLoading = useSelector(selectIsLoading);
 
   const visibleContacts = getVisibleContacts(contacts, filter);
 
   return (
     <Container>
-      <ToastContainer />
       <SectionComponents>
         <Title>Phonebook</Title>
         <ContactForm />
@@ -36,11 +32,12 @@ export const App = () => {
         {isLoading ? (
           <Loader />
         ) : visibleContacts.length ? (
-          <ContactList />
+          <ContactList contacts={visibleContacts} />
         ) : (
           <WarningText>Contact not found!</WarningText>
         )}
       </SectionComponents>
+      <ToastContainer />
     </Container>
   );
 };
