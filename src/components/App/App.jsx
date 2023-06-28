@@ -1,5 +1,8 @@
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectFilter, selectContacts, selectIsLoading } from 'redux/selectors';
+
+import { fetchContacts } from 'redux/operations';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,6 +17,12 @@ import { Loader } from 'components/Loader/Loader';
 import { getVisibleContacts } from 'helpers/contactUtils';
 
 export const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
   const contacts = useSelector(selectContacts);
   const filter = useSelector(selectFilter);
   const isLoading = useSelector(selectIsLoading);
@@ -32,7 +41,7 @@ export const App = () => {
         {isLoading ? (
           <Loader />
         ) : visibleContacts.length ? (
-          <ContactList contacts={visibleContacts} />
+          <ContactList />
         ) : (
           <WarningText>Contact not found!</WarningText>
         )}
